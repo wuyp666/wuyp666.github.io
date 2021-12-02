@@ -152,6 +152,214 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Java基础" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>第1章 多线程<br>1、基本概念<br>1.1 程序<br>程序（Programm），是为完成特定任务、用某种语言编写的一组指令的集合。即指一段静态的代码。<br>1.2 进程<br>进程（process），是程序的一次执行过程，或是正在运行的一个程序。进程作为资源分配的单位，系统在运行时会为每个进程分配不同的内存区域。<br>1.3 线程<br>线程（thread），进程可进一步细化为线程，是一个程序内部的一条执行路径。线程作为调度和执行的单位，每个线程拥独立的运行栈和程序计数器(pc)，线程切换的开销小。</p>
+<p>1.4 补充</p>
+<ol>
+<li><p>内存结构：</p>
+</li>
+<li><p>进程可以细化为多个线程。</p>
+</li>
+<li><p>每个线程，拥有自己独立的：栈、程序计数器<br>4．多个线程，共享同一个进程中的结构：方法区、堆。</p>
+</li>
+<li><p>单核CPU与多核CPU的理解<br>①单核CPU，其实是一种假的多线程，因为在一个时间单元内，也只能执行一个线程的任务。例如：虽然有多车道，但是收费站只有一个工作人员在收费，只有收了费才能通过，那么CPU就好比收费人员。如果某个人不想交钱，那么收费人员可以把他“挂起”（晾着他，等他想通了，准备好了钱，再去收费。）但是因为CPU时间单元特别短，因此感觉不出来。<br>②如果是多核的话，才能更好的发挥多线程的效率。（现在的服务器都是多核的）<br>③一个Java应用程序java.exe，其实至少三个线程：main()主线程，gc()垃圾回收线程，异常处理线程。当然如果发生异常，会影响主线程。</p>
+</li>
+<li><p>5 并行与并发<br>并行：多个CPU同时执行多个任务。比如：多个人同时做不同的事。<br>并发：一个CPU(采用时间片)同时执行多个任务。比如：秒杀、多个人做同一件事<br>2、多线程的创建</p>
+</li>
+<li><p>1 方式一：继承于Thread类</p>
+</li>
+<li><p>创建一个继承于Thread类的子类</p>
+</li>
+<li><p>重写Thread类的run() –&gt; 将此线程执行的操作声明在run()中</p>
+</li>
+<li><p>创建Thread类的子类的对象</p>
+</li>
+<li><p>通过此对象调用start()：①启动当前线程 ② 调用当前线程的run()</p>
+</li>
+</ol>
+<p>说明：<br>问题一：启动一个线程，必须调用start()，不能调用run()的方式启动线程。<br>问题二：如果再启动一个线程，必须重新创建一个Thread子类的对象，调用此对象的start().<br>2.2 方式二：实现Runnable接口</p>
+<ol>
+<li><p>创建一个实现了Runnable接口的类</p>
+</li>
+<li><p>实现类去实现Runnable中的抽象方法：run()</p>
+</li>
+<li><p>创建实现类的对象</p>
+</li>
+<li><p>将此对象作为参数传递到Thread类的构造器中，创建Thread类的对象</p>
+</li>
+<li><p>通过Thread类的对象调用start()：① 启动线程 ②调用当前线程的run()–&gt;调用了Runnable类型的target的run()</p>
+</li>
+<li><p>2.1 继承于Thread类和实现Runnable接口对比</p>
+</li>
+<li><p>开发中：优先选择：实现Runnable接口的方式</p>
+</li>
+<li><p>原因：<br>①实现的方式没有类的单继承性的局限性；<br>②实现的方式更适合来处理多个线程有共享数据的情况。</p>
+</li>
+<li><p>联系：public class Thread implements Runnable</p>
+</li>
+<li><p>相同点：两种方式都需要重写run(),将线程要执行的逻辑声明在run()中。</p>
+</li>
+<li><p>3 方式三：实现Callable接口（JDK5.0新增）</p>
+</li>
+<li><p>创建一个实现Callable的实现类</p>
+</li>
+<li><p>实现call方法，将此线程需要执行的操作声明在call()中</p>
+</li>
+<li><p>创建Callable接口实现类的对象</p>
+</li>
+<li><p>将此Callable接口实现类的对象作为传递到FutureTask构造器中，创建FutureTask的对象</p>
+</li>
+<li><p>将FutureTask的d类的对象作为参数传递到Threa构造器中，创建Thread对象，并调用start()</p>
+</li>
+<li><p>获取Callable中call方法的返回值</p>
+</li>
+<li><p>3.1 注意：<br>如何理解实现Callable接口的方式创建多线程比实现Runnable接口创建多线程方式强大？</p>
+</li>
+<li><p>call()可以有返回值的。</p>
+</li>
+<li><p>call()可以抛出异常，被外面的操作捕获，获取异常的信息</p>
+</li>
+<li><p>Callable是支持泛型的</p>
+</li>
+<li><p>4 方式四：使用线程池</p>
+</li>
+<li><p>提供指定线程数量的线程池</p>
+</li>
+<li><p>执行指定的线程的操作。需要提供实现Runnable接口或Callable接口实现类的对象</p>
+</li>
+<li><p>关闭连接池</p>
+</li>
+<li><p>4.1 优点</p>
+</li>
+<li><p>提高响应速度（减少了创建新线程的时间）</p>
+</li>
+<li><p>降低资源消耗（重复利用线程池中线程，不需要每次都创建）</p>
+</li>
+<li><p>便于线程管理</p>
+<pre><code>corePoolSize：核心池的大小
+maximumPoolSize：最大线程数
+keepAliveTime：线程没有任务时最多保持多长时间后会终止
+</code></pre>
+<p>3、Thread中的常用方法</p>
+</li>
+<li><p>start():启动当前线程；调用当前线程的run()</p>
+</li>
+<li><p>run(): 通常需要重写Thread类中的此方法，将创建的线程要执行的操作声明在此方法中</p>
+</li>
+<li><p>currentThread():静态方法，返回执行当前代码的线程</p>
+</li>
+<li><p>getName():获取当前线程的名字</p>
+</li>
+<li><p>setName():设置当前线程的名字</p>
+</li>
+<li><p>yield():释放当前cpu的执行权</p>
+</li>
+<li><p>join():在线程a中调用线程b的join(),此时线程a就进入阻塞状态，直到线程b完全执行完以后，线程a才结束阻塞状态。</p>
+</li>
+<li><p>stop():已过时。当执行此方法时，强制结束当前线程。</p>
+</li>
+<li><p>sleep(long millitime):让当前线程“睡眠”指定的millitime毫秒。在指定的millitime毫秒时间内，当前线程是阻塞状态。</p>
+</li>
+<li><p>isAlive():判断当前线程是否存活<br>4、线程的优先级</p>
+</li>
+<li><p>MAX_PRIORITY：10；MIN _PRIORITY：1；NORM_PRIORITY：5  –&gt;默认优先级</p>
+</li>
+<li><p>如何获取和设置当前线程的优先级：<br>①getPriority():获取线程的优先级<br>②setPriority(int p):设置线程的优先级</p>
+</li>
+<li><p>说明：高优先级的线程要抢占低优先级线程cpu的执行权。但是只是从概率上讲，高优先级的线程高概率的情况下被执行。并不意味着只有当高优先级的线程执行完以后，低优先级的线程才执行。<br>5、线程的生命周期</p>
+</li>
+</ol>
+<p>说明：</p>
+<ol>
+<li><p>生命周期关注两个概念：状态、相应的方法</p>
+</li>
+<li><p>关注：状态a–&gt;状态b:哪些方法执行了（回调方法）</p>
+<pre><code> 某个方法主动调用：状态a--&gt;状态b
+</code></pre>
+</li>
+<li><p>阻塞：临时状态，不可以作为最终状态；死亡：最终状态。<br>6、解决线性安全问题<br>在Java中，通过同步机制来解决线程的安全问题</p>
+</li>
+<li><p>1 方式一：同步代码块</p>
+</li>
+<li><p>格式：synchronized(同步监视器){ //需要被同步的代码 }</p>
+</li>
+<li><p>说明：<br>①操作共享数据的代码，即为需要被同步的代码。 –&gt;不能包含代码多了，也不能包含代码少了。<br>②共享数据：多个线程共同操作的变量。比如：ticket就是共享数据。<br>③同步监视器：锁。任何一个类的对象，都可以充当锁。要求：多个线程必须要共用同一把锁。</p>
+</li>
+<li><p>补充：<br>①在实现Runnable接口创建多线程的方式中，我们可以考虑使用this充当同步监视器。<br>②在继承Thread类创建多线程的方式中，慎用this充当同步监视器，考虑使用当前类（类.class）充当同步监视器。</p>
+</li>
+<li><p>2 方式二：同步方法<br>如果操作共享数据的代码完整的声明在一个方法中，我们不妨将此方法声明同步的。</p>
+</li>
+</ol>
+<p>总结：</p>
+<ol>
+<li><p>同步方法仍然涉及到同步监视器，只是不需要我们显式的声明。</p>
+</li>
+<li><p>非静态的同步方法，同步监视器是：this；静态的同步方法，同步监视器是：当前类本身</p>
+</li>
+<li><p>3 方式三：Lock锁（JDK5.0新增）</p>
+</li>
+<li><p>死锁的理解：不同的线程分别占用对方需要的同步资源不放弃，都在等待对方放弃自己需要的同步资源，就形成了线程的死锁</p>
+</li>
+<li><p>说明：<br>1）出现死锁后，不会出现异常，不会出现提示，只是所有的线程都处于阻塞状态，无法继续<br>2）我们使用同步时，要避免出现死锁。</p>
+</li>
+<li><p>步骤：①实例化ReentrantLock；②调用锁定方法lock()；③调用解锁方法：unlock()</p>
+</li>
+</ol>
+<p>6.3.1面试题：synchronized 与 Lock的异同<br>相同：二者都可以解决线程安全问题<br>不同：synchronized机制在执行完相应的同步代码以后，自动的释放同步监视器; Lock需要手动的启动同步（lock()），同时结束同步也需要手动的实现（unlock()）<br>6.3.2 三种方式优先使用顺序<br>Lock -&gt; 同步代码块（已经进入了方法体，分配了相应资源）-&gt; 同步方法（在方法体之外）<br>6.3.3 同步方式的利弊<br>好处：同步的方式，解决了线程的安全问题。<br>局限性：操作同步代码时，只能一个线程参与，其他线程等待。相当于是一个单线程的过程，效率低。<br>6.3.4 释放锁与不释放锁的操作</p>
+<p>6.3.5 单例模式之懒汉式<br>class Bank {<br>    private Bank() {<br>    }<br>    public static Bank instance = null;<br>    public static Bank getInstance() {<br>        //方式一：效率稍差<br>//        synchronized (Bank.class) {<br>//            if (instance == null) {<br>//                instance = new Bank();<br>//            }<br>//            return instance;<br>        //方式二：效率更高<br>        if (instance == null) {<br>            synchronized (Bank.class) {<br>                if (instance == null) {<br>                    instance = new Bank();<br>                }<br>            }<br>        }<br>        return instance;<br>    }<br>}<br>7、线程通信<br>7.1 三个方法</p>
+<ol>
+<li>wait():一旦执行此方法，当前线程就进入阻塞状态，并释放同步监视器。</li>
+<li>notify():一旦执行此方法，就会唤醒被wait的一个线程。如果有多个线程被wait，就唤醒优先级高的那个。</li>
+<li>notifyAll():一旦执行此方法，就会唤醒所有被wait的线程。</li>
+</ol>
+<p>说明：<br>wait()，notify()，notifyAll()三个方法必须使用在同步代码块或同步方法中。<br>wait()，notify()，notifyAll()三个方法的调用者必须是同步代码块或同步方法中的同步监视器。否则，会出现IllegalMonitorStateException异常。<br>wait()，notify()，notifyAll()三个方法是定义在java.lang.Object类中。<br>7.2 面试题：sleep() 和 wait()的异同<br>1.相同点：一旦执行方法，都可以使得当前的线程进入阻塞状态。</p>
+<p>2.不同点：<br>1）两个方法声明的位置不同：Thread类中声明sleep() , Object类中声明wait()<br>2）调用的要求不同：sleep()可以在任何需要的场景下调用。 wait()必须使用在同步代码块或同步方法中<br>3）关于是否释放同步监视器：如果两个方法都使用在同步代码块或同步方法中，sleep()不会释放锁，wait()会释放锁。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/12/02/Java%E5%9F%BA%E7%A1%80/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-我的第一篇博客" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
